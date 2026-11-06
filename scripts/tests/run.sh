@@ -81,7 +81,7 @@ check "labels repo argument limits the run" \
 # ---- repo-metadata.sh -----------------------------------------------------
 python3 - "$work/state.json" <<'EOF'
 import json, sys
-names = ["airbrakes-SR", "Hyperion-II", "HPR-Flight-Computer", "HPR-Rocket-Flight-Computer",
+names = ["airbrakes-SR", "Hyperion-II", "hpr-flight-computer", "HPR-Rocket-Flight-Computer",
          "ORKtoSCAD", "ESP-LaunchController", "eChargeSCAD", "rocketry-flight-logs", "screw-switch", "blue-raven-cli",
          "post-flight-analysis", "rocket-altitude-ekf", "cubesat-payload", ".github"]
 repos = {f"burnoutlabs/{n}": {"description": "", "topics": [], "labels": []} for n in names}
