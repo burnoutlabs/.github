@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Offline tests for sync-labels.sh.
+# Offline tests for sync-labels.sh and repo-metadata.sh.
 #
 # A stub `gh` (tests/stub/gh) is put first on PATH. It serves a fixture, logs
-# every call and applies label edits to the fixture, so a dry run, an
+# every call and applies label and repo edits to the fixture, so a dry run, an
 # --apply and a second dry run can be checked end to end without GitHub.
 #
 # Usage: scripts/tests/run.sh
@@ -78,8 +78,44 @@ out=$("$scripts/sync-labels.sh" beta)
 check "labels repo argument limits the run" \
   bash -c "! command grep -q 'burnoutlabs/alpha' '$work/calls.log'"
 
+# ---- repo-metadata.sh -----------------------------------------------------
+python3 - "$work/state.json" <<'EOF'
+import json, sys
+names = ["airbrakes-SR", "Hyperion-II", "HPR-Flight-Computer", "HPR-Rocket-Flight-Computer",
+         "ORKtoSCAD", "eChargeSCAD", "rocketry-flight-logs", "screw-switch", "blue-raven-cli",
+         "post-flight-analysis", "rocket-altitude-ekf", "cubesat-payload", ".github"]
+repos = {f"burnoutlabs/{n}": {"description": "", "topics": [], "labels": []} for n in names}
+repos["burnoutlabs/screw-switch"]["topics"] = ["high-power-rocketry", "kicad", "pcb"]
+repos["burnoutlabs/screw-switch"]["description"] = "Screw-actuated safety switch for arming high-power rocket electronics."
+repos["burnoutlabs/ORKtoSCAD"]["archived"] = True
+json.dump({"repos": repos}, open(sys.argv[1], "w"))
+EOF
+: >"$work/calls.log"
+before=$(state_hash)
+out=$("$scripts/repo-metadata.sh")
+echo "$out" >"$work/metadata-dry.txt"
+
+check "metadata dry run makes no mutating gh call" test "$(mutations)" -eq 0
+check "metadata dry run leaves the fixture unchanged" test "$(state_hash)" = "$before"
+check "metadata dry run plans an edit for 12 repos" \
+  test "$(command grep -c '^DRY-RUN gh repo edit' <<<"$out")" -eq 12
+check "metadata dry run adds only the missing topic and keeps a matching description" \
+  command grep -q -x -F "DRY-RUN gh repo edit burnoutlabs/screw-switch --add-topic rocketry" <<<"$out"
+check "metadata dry run skips an archived repo" \
+  command grep -q -F "skip burnoutlabs/ORKtoSCAD: archived" <<<"$out"
+
+: >"$work/calls.log"
+"$scripts/repo-metadata.sh" --apply >"$work/metadata-apply.txt"
+check "metadata --apply makes the 12 planned calls" test "$(mutations)" -eq 12
+
+: >"$work/calls.log"
+out=$("$scripts/repo-metadata.sh")
+check "metadata second dry run plans nothing" command grep -q -F "dry run: 0 change(s) planned" <<<"$out"
+check "metadata second dry run makes no mutating gh call" test "$(mutations)" -eq 0
+
 # ---- failure handling -----------------------------------------------------
 echo '{"repos": {}}' >"$work/state.json"
+check "metadata stops when gh fails" bash -c "! '$scripts/repo-metadata.sh' >/dev/null 2>&1"
 check "labels stops when the org has no repos" bash -c "! '$scripts/sync-labels.sh' >/dev/null 2>&1"
 
 echo
