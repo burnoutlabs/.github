@@ -27,10 +27,10 @@ toward them as they are worked on; new repos start from them.
 | --- | --- | --- |
 | Airbrakes | [airbrakes-SR](https://github.com/burnoutlabs/airbrakes-SR): DMATS airbrakes from the 2023-24 capstone; never deployed in flight | [werocketry/RocketFlightSim](https://github.com/werocketry/RocketFlightSim), [werocketry/airbrakes-lookuptable-generator](https://github.com/werocketry/airbrakes-lookuptable-generator) |
 | Vehicle | [Hyperion-II](https://github.com/burnoutlabs/Hyperion-II): 2024-25 rocket design, sims, avionics schematics and flight data | [werocketry/FinFlutterHandbook](https://github.com/werocketry/FinFlutterHandbook), [werocketry/FlightEnvironmentProperties](https://github.com/werocketry/FlightEnvironmentProperties) |
-| Flight computer | [HPR-Flight-Computer](https://github.com/burnoutlabs/HPR-Flight-Computer): plain copy of SparkyVT's V4.6, restructured in 2024 <br> [HPR-Rocket-Flight-Computer](https://github.com/burnoutlabs/HPR-Rocket-Flight-Computer): fork of SparkyVT's V4.7.x, where new firmware work starts | [SparkyVT/HPR-Rocket-Flight-Computer](https://github.com/SparkyVT/HPR-Rocket-Flight-Computer) (upstream) |
+| Flight computer | [HPR-Flight-Computer](https://github.com/burnoutlabs/HPR-Flight-Computer): the working flight-computer firmware, a 2024 restructure of SparkyVT's V4.6 <br> [HPR-Rocket-Flight-Computer](https://github.com/burnoutlabs/HPR-Rocket-Flight-Computer): clean fork of SparkyVT's upstream, kept to follow upstream changes | [SparkyVT/HPR-Rocket-Flight-Computer](https://github.com/SparkyVT/HPR-Rocket-Flight-Computer) (upstream) |
 | Flight data | [post-flight-analysis](https://github.com/burnoutlabs/post-flight-analysis): `pfa`, parsers and analysis for altimeter and flight-computer logs, and the flight datasets <br> [blue-raven-cli](https://github.com/burnoutlabs/blue-raven-cli): USB download tool for the Featherweight Blue Raven <br> [rocket-altitude-ekf](https://github.com/burnoutlabs/rocket-altitude-ekf): offline EKF for altitude, vertical velocity and accelerometer bias (MATLAB) <br> [rocketry-flight-logs](https://github.com/burnoutlabs/rocketry-flight-logs): earlier log repository, superseded by post-flight-analysis | |
 | Simulation and CAD tools | [eChargeSCAD](https://github.com/burnoutlabs/eChargeSCAD): ejection-charge calculator and canister generator in OpenSCAD <br> [ORKtoSCAD](https://github.com/burnoutlabs/ORKtoSCAD): fork of an OpenRocket-to-OpenSCAD converter; the contribution was merged upstream in 2024 | [heibench/orlab](https://github.com/heibench/orlab): Python scripting for OpenRocket <br> [bdureau/OpenRocketToOpenScad](https://github.com/bdureau/OpenRocketToOpenScad) (upstream of ORKtoSCAD) |
-| Hardware | [screw-switch](https://github.com/burnoutlabs/screw-switch): screw-actuated arming switch <br> [cubesat-payload](https://github.com/burnoutlabs/cubesat-payload): modular, data-driven CubeSat-form-factor payload in OpenSCAD | |
+| Hardware | [screw-switch](https://github.com/burnoutlabs/screw-switch): screw-actuated arming switch <br> [ESP-LaunchController](https://github.com/burnoutlabs/ESP-LaunchController): wireless ESP32 launch controller, in progress <br> [cubesat-payload](https://github.com/burnoutlabs/cubesat-payload): modular, data-driven CubeSat-form-factor payload in OpenSCAD | |
 | Org | [.github](https://github.com/burnoutlabs/.github): this profile and org-wide setup | |
 
 **Standalone copies.** airbrakes-SR, Hyperion-II and post-flight-analysis were
@@ -70,8 +70,8 @@ Dates are from git history (commit or repository creation dates).
 - **2024-11-29:** orlab and Hyperion-II started. A concept for a student-researched-and-developed
   (SRAD) flight computer followed on 2024-12-31 and stayed at the block-diagram
   stage.
-- **2025-07:** a clean fork of SparkyVT's flight computer (V4.7.x), and
-  screw-switch.
+- **2025-07:** a clean fork of SparkyVT's flight computer (V4.7.x), kept to
+  follow upstream, and screw-switch.
 - **2025-08-21:** Hyperion-II flew, logged by a Blue Raven and a TeleMega.
   blue-raven-cli followed the next day.
 - **2026-06:** the `pfa` package in post-flight-analysis.

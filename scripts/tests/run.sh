@@ -82,7 +82,7 @@ check "labels repo argument limits the run" \
 python3 - "$work/state.json" <<'EOF'
 import json, sys
 names = ["airbrakes-SR", "Hyperion-II", "HPR-Flight-Computer", "HPR-Rocket-Flight-Computer",
-         "ORKtoSCAD", "eChargeSCAD", "rocketry-flight-logs", "screw-switch", "blue-raven-cli",
+         "ORKtoSCAD", "ESP-LaunchController", "eChargeSCAD", "rocketry-flight-logs", "screw-switch", "blue-raven-cli",
          "post-flight-analysis", "rocket-altitude-ekf", "cubesat-payload", ".github"]
 repos = {f"burnoutlabs/{n}": {"description": "", "topics": [], "labels": []} for n in names}
 repos["burnoutlabs/screw-switch"]["topics"] = ["high-power-rocketry", "kicad", "pcb"]
@@ -97,8 +97,8 @@ echo "$out" >"$work/metadata-dry.txt"
 
 check "metadata dry run makes no mutating gh call" test "$(mutations)" -eq 0
 check "metadata dry run leaves the fixture unchanged" test "$(state_hash)" = "$before"
-check "metadata dry run plans an edit for 12 repos" \
-  test "$(command grep -c '^DRY-RUN gh repo edit' <<<"$out")" -eq 12
+check "metadata dry run plans an edit for 13 repos" \
+  test "$(command grep -c '^DRY-RUN gh repo edit' <<<"$out")" -eq 13
 check "metadata dry run adds only the missing topic and keeps a matching description" \
   command grep -q -x -F "DRY-RUN gh repo edit burnoutlabs/screw-switch --add-topic rocketry" <<<"$out"
 check "metadata dry run skips an archived repo" \
@@ -106,7 +106,7 @@ check "metadata dry run skips an archived repo" \
 
 : >"$work/calls.log"
 "$scripts/repo-metadata.sh" --apply >"$work/metadata-apply.txt"
-check "metadata --apply makes the 12 planned calls" test "$(mutations)" -eq 12
+check "metadata --apply makes the 13 planned calls" test "$(mutations)" -eq 13
 
 : >"$work/calls.log"
 out=$("$scripts/repo-metadata.sh")
