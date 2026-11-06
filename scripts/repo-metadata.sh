@@ -25,7 +25,7 @@ REPOS=(
   "Hyperion-II|Hyperion-II (2024-25) design, sims, avionics schematics and flight data. Standalone copy of werocketry/Hyperion-II.|openrocket,kicad"
   "HPR-Flight-Computer|Working flight-computer firmware for Teensy: a 2024 restructure of SparkyVT's HPR Rocket Flight Computer V4.6. The clean upstream fork is HPR-Rocket-Flight-Computer.|flight-computer,teensy"
   "HPR-Rocket-Flight-Computer|Clean fork of SparkyVT's HPR Rocket Flight Computer, kept to follow upstream. The working firmware is HPR-Flight-Computer.|flight-computer,teensy"
-  "ESP-LaunchController|Wireless model rocket launch controller based on the ESP32. In progress; not yet safe to use.|esp32"
+  "ESP-LaunchController|Wireless model rocket launch controller based on the ESP32. Work in progress.|esp32"
   "ORKtoSCAD|Convert OpenRocket files to OpenSCAD geometry. Fork of bdureau/OpenRocketToOpenScad; the contribution here was merged upstream in 2024.|openscad,openrocket"
   "eChargeSCAD|OpenSCAD script for the calculation and generation of ejection charges|openscad"
   "rocketry-flight-logs|Superseded by burnoutlabs/post-flight-analysis, which holds the flight logs and the analysis tools.|flight-data"
