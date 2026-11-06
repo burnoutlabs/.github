@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""A fake `gh` for testing the scripts offline.
+
+Reads and writes a fixture in $GH_STUB_STATE (state.json) and appends every
+call to $GH_STUB_STATE/calls.log. It understands only the calls the scripts
+make; anything else exits 1 so an unexpected call fails the test.
+"""
+import json
+import os
+import shlex
+import sys
+
+state_dir = os.environ["GH_STUB_STATE"]
+path = os.path.join(state_dir, "state.json")
+args = sys.argv[1:]
+with open(os.path.join(state_dir, "calls.log"), "a") as log:
+    log.write(shlex.join(args) + "\n")
+with open(path) as f:
+    state = json.load(f)
+
+
+def opt(name):
+    return args[args.index(name) + 1] if name in args else None
+
+
+def save():
+    with open(path, "w") as f:
+        json.dump(state, f, indent=1)
+
+
+def fail(msg):
+    print(f"gh-stub: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+cmd = tuple(args[:2])
+repo = opt("--repo")
+if repo is not None and repo not in state["repos"] and cmd[0] != "repo":
+    fail(f"no such repo {repo}")
+
+if cmd == ("repo", "list"):
+    jq = opt("--jq") or ""
+    if "select(.isArchived | not)" in jq:
+        want_archived = False
+    elif "select(.isArchived)" in jq:
+        want_archived = True
+    else:
+        fail("repo list without an archived filter: " + jq)
+    for name, r in state["repos"].items():
+        if r.get("archived", False) == want_archived:
+            print(name.split("/", 1)[1])
+elif cmd == ("repo", "view"):
+    r = state["repos"].get(args[2]) or fail(f"no such repo {args[2]}")
+    print(str(r.get("archived", False)).lower())
+    print(r.get("description", ""))
+    print(" ".join(r.get("topics", [])))
+elif cmd == ("repo", "edit"):
+    r = state["repos"][args[2]]
+    if r.get("archived"):
+        fail("repository is archived")
+    if opt("--description") is not None:
+        r["description"] = opt("--description")
+    if opt("--add-topic"):
+        r["topics"] = sorted(set(r.get("topics", [])) | set(opt("--add-topic").split(",")))
+    save()
+elif cmd == ("label", "list"):
+    for lab in state["repos"][repo]["labels"]:
+        print(f"{lab['name']}\t{lab['color']}\t{lab['description']}")
+elif cmd in (("issue", "list"), ("pr", "list")):
+    uses = state["repos"][repo].get("uses", {}).get(opt("--label"), {})
+    print(uses.get(cmd[0], 0))
+elif cmd[0] == "label" and cmd[1] in ("create", "edit", "delete"):
+    labels = state["repos"][repo]["labels"]
+    name = args[2]
+    existing = [lab for lab in labels if lab["name"] == name]
+    if cmd[1] == "create":
+        if existing:
+            fail(f"label {name} already exists")
+        labels.append({"name": name, "color": opt("--color"), "description": opt("--description")})
+    elif not existing:
+        fail(f"label {name} not found")
+    elif cmd[1] == "edit":
+        existing[0].update(color=opt("--color"), description=opt("--description"))
+    else:
+        labels.remove(existing[0])
+    save()
+else:
+    fail("unhandled call: " + shlex.join(args))
